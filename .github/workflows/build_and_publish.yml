@@ -77,7 +77,7 @@ jobs:
         id: digest
         run: |
           DIGEST=$(docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ github.sha }} --format '{{json .}}' | jq -r '.Manifests[0].Digest')
-          DIGESTJSON=$(docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ github.sha }} --format '{{json .}}' 
+          DIGESTJSON=$(docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ github.sha }} --format '{{json .}}') 
           echo "digest=$DIGEST" >> $GITHUB_ENV
           echo "+++++++++ ========= +++++++++"
           echo "$DIGESTJSON"
