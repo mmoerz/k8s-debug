@@ -76,12 +76,7 @@ jobs:
       - name: Get image digest
         id: digest
         run: |
-          DIGEST=$(docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ github.sha }} --format '{{json .}}' | jq -r '.Manifests[0].Digest')
-          DIGESTJSON=$(docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ github.sha }} --format '{{json .}}') 
-          echo "digest=$DIGEST" >> $GITHUB_ENV
-          echo "+++++++++ ========= +++++++++"
-          echo "$DIGESTJSON"
-          echo "+++++++++ ========= +++++++++"
+          DIGEST=$(docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ github.sha }} --format '{{json .}}' | jq -r '.manifest.manifests[] | select(.platform.architecture == "amd64" and .platform.os == "linux") | .digest')
           echo "Image digest: $DIGEST"
 
 
