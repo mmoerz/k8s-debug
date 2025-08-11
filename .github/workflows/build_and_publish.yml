@@ -63,8 +63,6 @@ jobs:
             ${{ env.LATEST && format('{0}:latest', env.IMAGE_NAME) || '' }}
             ${{ startsWith(github.ref, 'refs/tags/v') && format('{0}:{1}', env.IMAGE_NAME, github.ref_name) || '' }}
 
-            #ghcr.io/${{ github.repository_owner }}/debug-barman:${{ env.VERSION }}${{ env.LATEST && format(',ghcr.io/{0}/debug-barman:latest', github.repository_owner) || '' }}
-      
       # Install Syft for SBOM
       - name: Install Syft
         uses: anchore/sbom-action/download-syft@v0
