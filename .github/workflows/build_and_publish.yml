@@ -77,8 +77,13 @@ jobs:
         id: digest
         run: |
           DIGEST=$(docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ github.sha }} --format '{{json .}}' | jq -r '.Manifests[0].Digest')
+          DIGESTJSON=$(docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ github.sha }} --format '{{json .}}' 
           echo "digest=$DIGEST" >> $GITHUB_ENV
+          echo "+++++++++ ========= +++++++++"
+          echo "$DIGESTJSON"
+          echo "+++++++++ ========= +++++++++"
           echo "Image digest: $DIGEST"
+
 
       # Generate SBOM (SPDX JSON) and attach to digest
       - name: Generate and attach SBOM for digests
