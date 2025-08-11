@@ -76,7 +76,7 @@ jobs:
       - name: Get image digest
         id: digest
         run: |
-          DIGEST=$(docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ github.sha }} --format '{{json .}}' | jq -r '.manifest.manifests[] | select(.platform.architecture == "amd64" and .platform.os == "linux") | .digest')
+          DIGEST=$(docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ github.sha }} --format '{{json .}}' | jq -r '.manifest.manifests[] | select(.platform.architecture == "amd64" and .platform.os == "linux") | .digest')
           echo "Image digest: $DIGEST"
 
 
