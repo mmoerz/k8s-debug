@@ -15,9 +15,14 @@ RUN apt-get update && \
         python3 \
         python3-pip \
         postgresql-client \
-    && pip3 install barman-cli \
+        python3-barman \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# python3-venv python3-pip
+# python3 -m venv /opt/venv
+#ENV PATH="/opt/venv/bin:$PATH"
+#RUN pip install --no-cache-dir barman
 
 # Create non-root user (UID 1000 matches many restricted clusters)
 RUN useradd -u 1000 -m debuguser
