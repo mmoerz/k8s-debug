@@ -76,45 +76,43 @@ jobs:
       - name: Get image digest
         id: digest
         run: |
-          DIGEST=$(docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ github.sha }} --format '{{json .}}' | jq -r '.manifest.manifests[] | select(.platform.architecture == "amd64" and .platform.os == "linux") | .digest')
+          DIGEST=$(docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            --format '{{json .}}' | jq -r '.manifest.manifests[] 
+            | select(.platform.architecture == "amd64" and .platform.os == "linux") 
+            | .digest')
           echo "Image digest: $DIGEST"
-          echo "digest=$DIGEST" >> $GITHUB_ENV
+          echo "DIGEST=$DIGEST" >> $GITHUB_ENV
 
       # Generate SBOM (SPDX JSON) and attach to digest
-      - name: Generate and attach SBOM for digests
+      - name: Generate and attach SBOM for digest
         run: |
-          syft ${{ env.IMAGE_NAME }}@${{ env.digest }} -o spdx-json > sbom.json
-          cosign attach sbom --sbom sbom.json ${{ env.IMAGE_NAME }}@${{ env.digest }}
+          syft ${{ env.IMAGE_NAME }}@${{ env.DIGEST }} -o spdx-json > sbom.json
+          cosign attach sbom sbom.json ${{ env.IMAGE_NAME }}@${{ env.DIGEST }}
 
       - name: Attach SBOM for tags (latest and version tags)
         run: |
-          # Attach SBOM for tag (latest or version tag)
           if [ -n "${VERSION}" ]; then
             TAG_REF="${IMAGE_NAME}:${VERSION}"
           else
             TAG_REF="${IMAGE_NAME}:latest"
           fi
           syft $TAG_REF -o spdx-json > sbom-tag.json
-          cosign attach sbom --sbom sbom-tag.json $TAG_REF
+          cosign attach sbom sbom-tag.json $TAG_REF
 
       # Sign image digest
       - name: Sign image
         run: |
-          cosign sign --yes ${{ env.IMAGE_NAME }}@${{ env.digest }}
+          cosign sign --yes ${{ env.IMAGE_NAME }}@${{ env.DIGEST }}
 
       - name: Upload SBOM as a separate artifact with cosign
         run: |
-          # Upload SBOM attestation explicitly (optional, good for visibility in Rekor)
-          cosign upload sbom sbom.json ${{ env.IMAGE_NAME }}@${{ env.digest }}
-
-          # Also upload SBOM attached to tags (latest/version)
+          cosign upload sbom sbom.json ${{ env.IMAGE_NAME }}@${{ env.DIGEST }}
           TAG_REF="${IMAGE_NAME}:${{ env.VERSION }}"
           cosign upload sbom sbom-tag.json $TAG_REF
 
       # Verify image signature
       - name: Verify image signature
         run: |
-          cosign verify ${{ env.IMAGE_NAME }}@${{ env.digest }} \
+          cosign verify ${{ env.IMAGE_NAME }}@${{ env.DIGEST }} \
           --certificate-identity-regexp "https://github.com/${{ github.repository }}" \
           --certificate-oidc-issuer https://token.actions.githubusercontent.com
-
