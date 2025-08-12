@@ -78,8 +78,7 @@ jobs:
         run: |
           DIGEST=$(docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ github.sha }} --format '{{json .}}' | jq -r '.manifest.manifests[] | select(.platform.architecture == "amd64" and .platform.os == "linux") | .digest')
           echo "Image digest: $DIGEST"
-          echo "digest=$DIGEST" >> $GITHUB_ENV
-
+          echo "digest=$DIGEST" >> $GITHUB_ENV
 
       # Generate SBOM (SPDX JSON) and attach to digest
       - name: Generate and attach SBOM for digests
@@ -106,11 +105,11 @@ jobs:
       - name: Upload SBOM as a separate artifact with cosign
         run: |
           # Upload SBOM attestation explicitly (optional, good for visibility in Rekor)
-          cosign upload sbom --sbom sbom.json ${{ env.IMAGE_NAME }}@${{ env.digest }}
+          cosign upload sbom sbom.json ${{ env.IMAGE_NAME }}@${{ env.digest }}
 
           # Also upload SBOM attached to tags (latest/version)
           TAG_REF="${IMAGE_NAME}:${{ env.VERSION }}"
-          cosign upload sbom --sbom sbom-tag.json $TAG_REF
+          cosign upload sbom sbom-tag.json $TAG_REF
 
       # Verify image signature
       - name: Verify image signature
