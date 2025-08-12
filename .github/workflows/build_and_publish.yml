@@ -76,7 +76,7 @@ jobs:
         id: digest
         run: |
           RAW=$(docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ github.sha }} --format '{{json .}}')
-          echo $RAW
+          echo "$RAW"
           # Try multi-arch first, fall back to single-arch
           DIGEST=$(echo "$RAW" | jq -r '.manifests[]?.digest // .digest')
           echo $DIGEST
