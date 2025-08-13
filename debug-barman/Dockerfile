@@ -15,7 +15,8 @@ RUN apt-get update && \
         python3 \
         python3-pip \
         postgresql-client \
-        python3-barman \
+        barman-cli \
+        barman-cli-cloud \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
