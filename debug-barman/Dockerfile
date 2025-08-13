@@ -17,6 +17,7 @@ RUN apt-get update && \
         postgresql-client \
         barman-cli \
         barman-cli-cloud \
+        openssl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
